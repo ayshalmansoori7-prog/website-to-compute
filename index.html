@@ -1,56 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ar" dir="rtl">
 <head>
-  <!-- 
-      This is an HTML comment
-      You can write text in a comment and the content won't be visible in the page
-    -->
-
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="https://glitch.com/favicon.ico" />
-
-  <!--
-      This is the page head - it contains info the browser uses
-      Like the title, which appears on the browser tab but not inside the page
-      Further down you'll see the content that displays in the page
-    -->
-  <title>Hello World!</title>
-
-  <!-- The website stylesheet -->
-  <link rel="stylesheet" href="/style.css" />
-
-  <!-- The website JavaScript file -->
-  <script src="/script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motaakid - Web Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <!--
-      The body includes the content you see in the page
-      Each element is defined using tags, like this <div></div>
-      The attributes like class="wrapper" let us style elements in the CSS
-    -->
-  <div class="wrapper">
-    <div class="content" role="main">
-      <h1 class="title">Oh hi website!</h1>
-      <img src="/cool-website.svg" class="illustration" alt="cool website" />
-      <div class="instructions">
-        <p>
-          Fork <a href="https://github.com/glitchdotcom/website-to-compute">this project</a> and open it in a GitHub Codespace.
-        </p>
-        <p> Follow the steps in the README to deploy your new website to Fastly in a few steps!
-        </p>
+    <div class="container" id="app">
+        <!-- Home Page -->
+        <div id="homePage" class="page">
+            <div class="home-header">
+                <div class="language-toggle">
+                    <button class="lang-btn active" data-lang="ar">العربية</button>
+                </div>
+            </div>
+            
+            <div class="home-content">
+                <h1 id="gameTitle">MOTAAKID</h1>
+                <p id="gameSubtitle" class="subtitle">لعبة الثقافة العامة</p>
+                
+                <div class="home-tabs">
+                    <button class="tab-btn active" data-tab="login">
+                        <span id="loginTab">دخول</span>
+                    </button>
+                    <button class="tab-btn" data-tab="register">
+                        <span id="registerTab">تسجيل</span>
+                    </button>
+                </div>
+                
+                <!-- Login Tab -->
+                <div id="loginContent" class="tab-content active">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail" id="emailLabel">البريد الإلكتروني أو الهاتف</label>
+                            <input type="text" id="loginEmail" placeholder="email@example.com أو 971501234567" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="loginBtn">دخول</button>
+                    </form>
+                    <p class="form-hint" id="loginHint">أدخل بريدك الإلكتروني أو رقم هاتفك للمتابعة</p>
+                </div>
+                
+                <!-- Register Tab -->
+                <div id="registerContent" class="tab-content">
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="regName" id="nameLabel">الاسم</label>
+                            <input type="text" id="regName" placeholder="اسمك" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail" id="regEmailLabel">البريد الإلكتروني</label>
+                            <input type="email" id="regEmail" placeholder="email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label id="phoneLabel">رقم الهاتف</label>
+                            <div class="phone-input">
+                                <select id="countryCode" required>
+                                    <option value="+971">UAE (+971)</option>
+                                    <option value="+966">Saudi Arabia (+966)</option>
+                                    <option value="+965">Kuwait (+965)</option>
+                                    <option value="+974">Qatar (+974)</option>
+                                    <option value="+973">Bahrain (+973)</option>
+                                    <option value="+968">Oman (+968)</option>
+                                    <option value="+964">Iraq (+964)</option>
+                                    <option value="+20">Egypt (+20)</option>
+                                    <option value="+212">Morocco (+212)</option>
+                                    <option value="+213">Algeria (+213)</option>
+                                    <option value="+216">Tunisia (+216)</option>
+                                    <option value="+218">Libya (+218)</option>
+                                    <option value="+249">Sudan (+249)</option>
+                                    <option value="+967">Yemen (+967)</option>
+                                    <option value="+970">Palestine (+970)</option>
+                                    <option value="+961">Lebanon (+961)</option>
+                                    <option value="+963">Syria (+963)</option>
+                                    <option value="+962">Jordan (+962)</option>
+                                </select>
+                                <input type="tel" id="regPhone" placeholder="501234567" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="registerBtn">تسجيل</button>
+                    </form>
+                    <p class="form-hint" id="registerHint">أنشئ حسابًا للبدء في اللعب</p>
+                </div>
 
-      </div>
+                <!-- Informational Hero -->
+                <section class="hero-section">
+                    <div class="hero-description">
+                        <h2>عن اللعبة</h2>
+                        <p>موتأكد هي لعبة مسابقات عربية سريعة وممتعة لفرق مكوّنة من لاعبين. اختر فئات، استعمل المساعدات بحكمة (تلميح، استعن بصديق)، وتنافس للحصول على أعلى نقاط — متعة وتعليم في آن واحد!</p>
+                        <div class="hero-cta">
+                            <button class="btn btn-primary" id="startNowBtn" onclick="showPage('teamPage')">ابدأ الآن</button>
+                        </div>
+                    </div>
+                </section>
 
-      <footer class="footer">
-        <div>
-          <a class="remix" href="https://github.com/glitchdotcom/website-to-compute">🚧 Get your own site</a>
+                <!-- Features / Cards -->
+                <section class="features-section">
+                    <h3 class="section-title">لماذا تلعب؟</h3>
+                    <div class="features-grid">
+                        <article class="feature-card">
+                            <div class="feature-icon">🎉</div>
+                            <h4>ممتع وسريع</h4>
+                            <p>جولات قصيرة وإيقاع سريع يبقي اللاعبين متحمسين طوال المباراة.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="feature-icon">🧠</div>
+                            <h4>ثري بالمعلومات</h4>
+                            <p>أسئلة تغطي الثقافة العامة والتاريخ والجغرافيا والعلوم والمزيد.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h4>تحدي الفريق</h4>
+                            <p>نظام أدوار ونسب إجابة يجعل كل جولة فرصة ذكية لكسب النقاط.</p>
+                        </article>
+                        <article class="feature-card">
+                            <div class="feature-icon">🏆</div>
+                            <h4>مكافآت</h4>
+                            <p>احصل على نقاط ومفاجآت تزيد التنافس والتشويق.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- Aids / Help Info -->
+                <section class="aids-info-section">
+                    <h3 class="section-title">المساعدات المتاحة</h3>
+                    <div class="aids-grid">
+                        <div class="aid-card">
+                            <div class="aid-icon">💡</div>
+                            <h4>تلميح</h4>
+                            <p>يمكن لكل فريق استخدام تلميح واحد في الجولة. يعطيك مؤشرًا قصيرًا يساعد على تذكُّر المعلومة دون كشف الإجابة.</p>
+                            <div class="aid-badge">مستخدم مرة واحدة/جولة</div>
+                        </div>
+                        <div class="aid-card">
+                            <div class="aid-icon">📞</div>
+                            <h4>استعن بصديق</h4>
+                            <p>استخدم خيار "استعن بصديق" لاستدعاء عداد 90 ثانية لمناقشة الإجابة مع فريقك. متاح مرة واحدة لكل فريق في كل جولة.</p>
+                            <div class="aid-badge">عداد 90s</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- How To Play -->
+                <section class="how-to-play-section">
+                    <h3 class="section-title">كيفية اللعب</h3>
+                    <div class="steps-container">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h4>سجل أو ادخل</h4>
+                            <p>استخدم صفحة الدخول أو التسجيل للبدء ثم أنشئ اسمين للفريق.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h4>اختر الفئات</h4>
+                            <p>اختر حتى 6 فئات تنافس عليها في الجولة.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h4>اختر قيمة</h4>
+                            <p>الفريق الحالي يختار نقاطًا (200-800) ويظهر السؤال مع مؤقت.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <h4>حدد من أجاب</h4>
+                            <p>بعد النقاش، اختر من أجاب (الفريق 1، الفريق 2، أو لا أحد) لتحديث النقاط.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
-      </footer>
+        
+        <!-- Team Names Page -->
+        <div id="teamPage" class="page hidden">
+            <div class="page-header">
+                <h2 id="teamTitle">إنشاء فرقك</h2>
+                <p id="teamSubtitle">أدخل اسم كل فريق</p>
+            </div>
+            
+            <div class="page-content">
+                <form id="teamForm">
+                    <div class="form-group">
+                        <label for="team1Name" id="team1Label">اسم الفريق الأول</label>
+                        <input type="text" id="team1Name" placeholder="أدخل اسم الفريق الأول" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="team2Name" id="team2Label">اسم الفريق الثاني</label>
+                        <input type="text" id="team2Name" placeholder="أدخل اسم الفريق الثاني" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="startGameBtn">ابدأ اللعبة</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Category Selection Page -->
+        <div id="categoryPage" class="page hidden">
+            <div class="page-header">
+                <h2 id="categoryTitle">اختر الفئات</h2>
+                <p id="categorySubtitle">اختر حتى 6 فئات</p>
+                <p class="category-count"><span id="selectedCount">0</span>/6</p>
+            </div>
+            
+            <div class="page-content">
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Categories will be populated here -->
+                </div>
+                <button type="button" class="btn btn-primary" id="startCategoryBtn" disabled>
+                    <span id="startCategoryBtnText">ابدأ اللعبة</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Questions Page -->
+        <div id="questionsPage" class="page hidden">
+            <div class="page-header">
+                <div class="score-display">
+                    <div class="team-score">
+                        <span id="team1NameDisplay"></span>: <strong id="team1Score">0</strong>
+                    </div>
+                    <div class="team-score">
+                        <span id="team2NameDisplay"></span>: <strong id="team2Score">0</strong>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="exitGameBtn" title="Exit Game">✕</button>
+            </div>
+            
+            <div class="page-content">
+                <!-- Category Questions Grid -->
+                <div id="categoryQuestionsView" class="hidden">
+                    <h3 id="currentCategoryTitle"></h3>
+                    <div class="questions-grid" id="questionsGrid">
+                        <!-- Questions will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Question Display -->
+                <div id="questionView" class="hidden">
+                    <div class="current-team" id="currentTeamDisplay"></div>
+                    <div class="timer-container">
+                        <div class="timer" id="timer">60</div>
+                        <div class="timer-bar" id="timerBar"></div>
+                    </div>
+                    <div class="points-display" id="pointsDisplay">200 نقاط</div>
+                    <div class="question-content">
+                        <h3 id="questionText"></h3>
+                        <div class="options" id="optionsContainer">
+                            <!-- Options will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Surprise Question Screen -->
+                <div id="surpriseScreen" class="hidden">
+                    <div class="surprise-content">
+                        <h2 id="surpriseTitle">🎁 سؤال مفاجئ!</h2>
+                        <p id="surpriseText">استعد لسؤال خاص ومهم!</p>
+                        <div class="surprise-hype" id="surpriseHype">
+                            هذا قد يغير اللعبة!
+                        </div>
+                        <button class="btn btn-primary" id="surpriseStartBtn">هل أنت مستعد؟</button>
+                    </div>
+                </div>
+                
+                <!-- Answer Display -->
+                <div id="answerView" class="hidden">
+                    <div id="answerContent"></div>
+                    <button class="btn btn-primary" id="nextQuestionBtn">السؤال التالي</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Page -->
+        <div id="resultsPage" class="page hidden">
+            <div class="results-container">
+                <h2 id="resultsTitle">نتائج اللعبة</h2>
+                <div class="results-winner" id="winnersDisplay"></div>
+                <div class="final-scores">
+                    <div class="final-score-card" id="finalScore1"></div>
+                    <div class="final-score-card" id="finalScore2"></div>
+                </div>
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="playAgainBtn">العب مرة أخرى</button>
+                    <button class="btn btn-secondary" id="homeBtn">العودة للبداية</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    
+    <script src="celebrations.js"></script>
+    <script src="app.js"></script>
 </body>
-
 </html>

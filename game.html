@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة المسابقة - الفئات والنقاط</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Naskh Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .game-header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .game-title h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .game-title p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .scores {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .team-score {
+            text-align: center;
+            padding: 15px 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-width: 150px;
+        }
+
+        .team-score.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .team-score h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .team-score .score-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .current-turn {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Main Game Area */
+        .game-area {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Categories Grid */
+        .categories-section {
+            flex: 1;
+            min-width: 600px;
+        }
+
+        .categories-title {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 60px;
+        }
+
+        .category-emoji {
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+
+        .category-name {
+            font-weight: bold;
+            font-size: 18px;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .points-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            flex: 1;
+            align-content: start;
+        }
+
+        .point-btn {
+            padding: 14px 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .point-btn:hover:not(:disabled) {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .point-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .point-btn:disabled {
+            background: #e8e8e8;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+            border-color: #ccc;
+            box-shadow: none;
+        }
+
+        .point-btn.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .point-btn-value {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .point-btn-label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        /* Question Panel */
+        .question-panel {
+            width: 350px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .question-panel.active {
+            display: flex;
+        }
+
+        .question-panel h2 {
+            color: #333;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .question-info {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .question-info label {
+            color: #666;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .question-info .value {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .question-text {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 6px;
+            color: #333;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* Aids Section */
+        .aids-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .aid-button {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .aid-button:hover:not(:disabled) {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .aid-button:disabled {
+            background: #e8e8e8;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+            border-color: #ccc;
+        }
+
+        .aid-button .icon {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .aid-button .label {
+            font-size: 11px;
+            display: block;
+        }
+
+        /* Hint Display Modal */
+        .hint-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hint-modal.active {
+            display: flex;
+        }
+
+        .hint-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .hint-content h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .hint-content p {
+            color: #333;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .hint-content button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hint-content button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Call a Friend Modal */
+        .friend-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .friend-modal.active {
+            display: flex;
+        }
+
+        .friend-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .friend-content h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .friend-content p {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .friend-timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff9800;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .friend-timer.warning {
+            color: #f44336;
+            animation: blink 0.5s infinite;
+        }
+
+        .friend-content .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .friend-content button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .friend-content button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .friend-content button.cancel {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .friend-content button.cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .timer.warning {
+            color: #ff9800;
+        }
+
+        .timer.danger {
+            color: #f44336;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Attribution Panel */
+        .attribution-panel {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .attribution-panel.active {
+            display: flex;
+        }
+
+        .attribution-panel h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .attribution-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .attribution-btn {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .attribution-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(4px);
+        }
+
+        .attribution-btn.team1 {
+            border-left: 4px solid #4caf50;
+        }
+
+        .attribution-btn.team2 {
+            border-left: 4px solid #2196f3;
+        }
+
+        .attribution-btn.no-one {
+            border-left: 4px solid #ff9800;
+        }
+
+        /* Game Over Panel */
+        .game-over-panel {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .game-over-panel.active {
+            display: flex;
+        }
+
+        .game-over-panel h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .winner-badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .final-scores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .final-score-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .final-score-card h4 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .final-score-card .score {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .game-actions button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* Setup Modal */
+        .setup-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .setup-modal.active {
+            display: flex;
+        }
+
+        .setup-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .setup-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .categories-select {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .category-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .category-checkbox input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .category-checkbox label {
+            margin: 0;
+            flex: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .game-area {
+                flex-direction: column;
+            }
+
+            .question-panel {
+                position: static;
+                width: 100%;
+            }
+
+            .categories-section {
+                min-width: unset;
+            }
+
+            .game-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .scores {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-title h1 {
+                font-size: 22px;
+            }
+
+            .points-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .category-header {
+                padding: 15px 12px;
+            }
+
+            .category-emoji {
+                font-size: 32px;
+            }
+
+            .category-name {
+                font-size: 16px;
+            }
+
+            .point-btn {
+                padding: 12px 8px;
+                font-size: 14px;
+                min-height: 48px;
+            }
+
+            .point-btn-value {
+                font-size: 14px;
+            }
+
+            .point-btn-label {
+                font-size: 10px;
+            }
+
+            .game-area {
+                gap: 15px;
+            }
+
+            .question-panel {
+                width: 100%;
+            }
+
+            .categories-section {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0;
+            }
+
+            body {
+                padding: 10px;
+            }
+
+            .game-header {
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .scores {
+                gap: 15px;
+            }
+
+            .team-score {
+                min-width: auto;
+                padding: 12px 15px;
+            }
+
+            .team-score .score-value {
+                font-size: 24px;
+            }
+
+            .game-title h1 {
+                font-size: 18px;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .category-header {
+                padding: 12px 10px;
+                min-height: 55px;
+            }
+
+            .category-emoji {
+                font-size: 28px;
+            }
+
+            .category-name {
+                font-size: 14px;
+            }
+
+            .point-btn {
+                padding: 10px 6px;
+                font-size: 12px;
+                min-height: 45px;
+            }
+
+            .point-btn-value {
+                font-size: 13px;
+            }
+
+            .point-btn-label {
+                font-size: 9px;
+            }
+
+            .question-panel {
+                padding: 15px;
+            }
+
+            .points-buttons {
+                padding: 12px;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Setup Modal -->
+        <div class="setup-modal active" id="setupModal">
+            <div class="setup-content">
+                <h2>🎮 ابدأ لعبة جديدة</h2>
+                <form id="setupForm">
+                    <div class="form-group">
+                        <label for="team1Name">اسم الفريق 1</label>
+                        <input type="text" id="team1Name" placeholder="أدخل اسم الفريق 1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="team2Name">اسم الفريق 2</label>
+                        <input type="text" id="team2Name" placeholder="أدخل اسم الفريق 2" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>اختر الفئات (الحد الأدنى 1، الحد الأقصى 6)</label>
+                        <div class="categories-select" id="categoriesSelect">
+                            <!-- Categories will be populated here -->
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 12px;">ابدأ اللعبة</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Game Header -->
+        <div class="game-header" id="gameHeader" style="display: none;">
+            <div class="game-title">
+                <h1>🎯 لعبة المسابقة</h1>
+                <p id="currentTurnText">دور الفريق 1</p>
+            </div>
+
+            <div class="scores">
+                <div class="team-score active" id="team1ScoreDisplay">
+                    <h3 id="team1NameDisplay">الفريق 1</h3>
+                    <div class="score-value" id="team1Score">0</div>
+                </div>
+                <div class="team-score" id="team2ScoreDisplay">
+                    <h3 id="team2NameDisplay">الفريق 2</h3>
+                    <div class="score-value" id="team2Score">0</div>
+                </div>
+            </div>
+
+            <div class="current-turn" id="currentTurnBadge">الفريق 1 يختار...</div>
+        </div>
+
+        <!-- Main Game Area -->
+        <div class="game-area" id="gameArea" style="display: none;">
+            <!-- Categories Grid -->
+            <div class="categories-section">
+                <div class="categories-title">اختر سؤالًا</div>
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Categories will be populated here -->
+                </div>
+            </div>
+
+            <!-- Question Panel -->
+            <div class="question-panel" id="questionPanel">
+                <h2>السؤال</h2>
+
+                <div class="question-info">
+                    <label>الفئة:</label>
+                    <div class="value" id="questionCategory">-</div>
+                </div>
+
+                <div class="question-info">
+                    <label>مستوى الصعوبة:</label>
+                    <div class="value" id="questionDifficulty">-</div>
+                </div>
+
+                <div class="question-info">
+                    <label>النقاط:</label>
+                    <div class="value" id="questionPoints">-</div>
+                </div>
+
+                <div class="timer" id="timer">60</div>
+
+                <div class="question-text" id="questionText">
+                    سيظهر السؤال هنا...
+                </div>
+
+                <!-- Aids Section -->
+                <div class="aids-section" id="aidsSection">
+                    <button class="aid-button" id="hintBtn" onclick="showHint()" title="الحصول على تلميح">
+                        <div class="icon">💡</div>
+                        <div class="label">تلميح</div>
+                    </button>
+                    <button class="aid-button" id="callFriendBtn" onclick="startCallFriend()" title="استعن بصديق (90 ثانية)">
+                        <div class="icon">📞</div>
+                        <div class="label">استعن بصديق</div>
+                    </button>
+                </div>
+
+                <!-- Attribution Panel (inside question panel) -->
+                <div class="attribution-panel" id="attributionPanel">
+                    <h3>من أجاب بشكل صحيح؟</h3>
+                    <div class="attribution-buttons">
+                        <button class="attribution-btn team1" data-team="1" onclick="handleTeamAttribution(1)">
+                            <span id="team1AttrBtn">الفريق 1</span>
+                        </button>
+                        <button class="attribution-btn team2" data-team="2" onclick="handleTeamAttribution(2)">
+                            <span id="team2AttrBtn">الفريق 2</span>
+                        </button>
+                        <button class="attribution-btn no-one" data-team="null" onclick="handleTeamAttribution(null)">
+                            لا أحد
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Panel -->
+        <div class="game-over-panel" id="gameOverPanel">
+            <h2>🎉 انتهت اللعبة!</h2>
+            <div class="winner-badge" id="winnerBadge">الفائز</div>
+
+            <div class="final-scores" id="finalScores">
+                <!-- Scores will be populated here -->
+            </div>
+
+            <div class="game-actions">
+                <button class="btn-primary" onclick="resetGame()">العب مجددًا</button>
+                <button class="btn-secondary" onclick="goHome()">العودة للصفحة الرئيسية</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hint Modal -->
+    <div class="hint-modal" id="hintModal">
+        <div class="hint-content">
+            <h3>💡 تلميح</h3>
+            <p id="hintText">إليك تلميح لمساعدتك...</p>
+            <button onclick="closeHintModal()">حسناً</button>
+        </div>
+    </div>
+
+    <!-- Call a Friend Modal -->
+    <div class="friend-modal" id="friendModal">
+        <div class="friend-content">
+            <h3>📞 تحدث مع صديقك</h3>
+            <p>لديك دقيقة و30 ثانية للمناقشة مع صديقك</p>
+            <div class="friend-timer" id="friendTimer">1:30</div>
+            <div class="button-group">
+                <button class="cancel" onclick="endCallFriend()">انتهيت</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="engine.js"></script>
+    <script>
+        // UI controller — now calls Engine.* (consolidated engine)
+
+        let selectedCategoryIds = [];
+        let friendTimerInterval = null;
+        let timerInterval = null;
+        let timeLeft = 60;
+        let attributionTimeoutId = null;
+        const ATTRIBUTION_FALLBACK_MS = 6000;
+
+        function initSetupForm() {
+            const categoriesSelect = document.getElementById('categoriesSelect');
+            categoriesSelect.innerHTML = '';
+
+            Engine.categoriesPointsTable.forEach(category => {
+                const div = document.createElement('div');
+                div.className = 'category-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="cat-${category.id}" value="${category.id}">
+                    <label for="cat-${category.id}">
+                        <span>${category.emoji}</span> ${category.nameAr}
+                    </label>
+                `;
+                categoriesSelect.appendChild(div);
+            });
+
+            const form = document.getElementById('setupForm');
+            form.addEventListener('submit', (e) => { e.preventDefault(); startGameFromForm(); });
+        }
+
+        function startGameFromForm() {
+            const team1Name = document.getElementById('team1Name').value.trim();
+            const team2Name = document.getElementById('team2Name').value.trim();
+            if (!team1Name || !team2Name) { alert('الرجاء إدخال اسمي الفريقين'); return; }
+
+            const checkboxes = document.querySelectorAll('#categoriesSelect input:checked');
+            selectedCategoryIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            if (selectedCategoryIds.length === 0) { alert('الرجاء اختيار فئة واحدة على الأقل'); return; }
+            if (selectedCategoryIds.length > 6) { alert('الحد الأقصى 6 فئات'); return; }
+
+            document.getElementById('setupModal').classList.remove('active');
+            document.getElementById('gameHeader').style.display = 'flex';
+            document.getElementById('gameArea').style.display = 'flex';
+
+            Engine.initializeGame(team1Name, team2Name, selectedCategoryIds);
+            renderCategoriesGrid();
+            updateScoreDisplay();
+        }
+
+        function renderCategoriesGrid() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = '';
+
+            Engine.gameState.selectedCategories.forEach(categoryId => {
+                const category = Engine.getCategoryById(categoryId);
+                const card = document.createElement('div');
+                card.className = 'category-card';
+
+                const pointsContainer = document.createElement('div');
+                pointsContainer.className = 'points-buttons';
+
+                category.points.forEach((point, index) => {
+                    const btn = document.createElement('button');
+                    const answered = Engine.isQuestionAnswered(categoryId, index);
+                    btn.className = 'point-btn' + (answered ? ' answered' : '');
+                    btn.disabled = answered;
+                    btn.innerHTML = answered ? '✓' : `<span class="point-btn-value">${point}</span><span class="point-btn-label">${Engine.getDifficultyLabel(index)}</span>`;
+                    btn.addEventListener('click', () => handlePointClick(categoryId, index));
+                    pointsContainer.appendChild(btn);
+                });
+
+                card.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-emoji">${category.emoji}</div>
+                        <div class="category-name">${category.nameAr}</div>
+                    </div>
+                `;
+                card.appendChild(pointsContainer);
+                grid.appendChild(card);
+            });
+        }
+
+        function handlePointClick(categoryId, pointIndex) {
+            if (Engine.isQuestionAnswered(categoryId, pointIndex)) return;
+            const ok = Engine.selectPoint(categoryId, pointIndex);
+            if (!ok) return;
+
+            const question = Engine.displayQuestion();
+            updateQuestionPanel(question);
+
+            document.getElementById('questionPanel').classList.add('active');
+            document.getElementById('attributionPanel').classList.remove('active');
+
+            startGameTimer();
+        }
+
+        function updateQuestionPanel(question) {
+            document.getElementById('questionCategory').textContent = question.categoryName;
+            document.getElementById('questionDifficulty').textContent = question.difficulty;
+            document.getElementById('questionPoints').textContent = `${question.pointValue} نقطة`;
+            document.getElementById('questionText').textContent = question.question;
+            updateAidButtons();
+        }
+
+        function updateAidButtons() {
+            const aidStatus = Engine.getCurrentTeamAidStatus();
+            const hintBtn = document.getElementById('hintBtn');
+            const callFriendBtn = document.getElementById('callFriendBtn');
+            hintBtn.disabled = !aidStatus.hintAvailable;
+            callFriendBtn.disabled = !aidStatus.callFriendAvailable;
+            hintBtn.title = aidStatus.hintAvailable ? 'الحصول على تلميح' : 'تم استخدام التلميح في هذه الجولة';
+            callFriendBtn.title = aidStatus.callFriendAvailable ? 'استعن بصديق (90 ثانية)' : 'تم استخدام الاستعانة بصديق في هذه الجولة';
+        }
+
+        function showHint() {
+            const result = Engine.useHint();
+            if (result.success) {
+                document.getElementById('hintText').textContent = result.hint;
+                document.getElementById('hintModal').classList.add('active');
+                updateAidButtons();
+            } else {
+                alert(result.message);
+            }
+        }
+
+        function closeHintModal() { document.getElementById('hintModal').classList.remove('active'); }
+
+        function startCallFriend() {
+            const result = Engine.useCallFriend();
+            if (result.success) {
+                document.getElementById('friendModal').classList.add('active');
+                updateAidButtons();
+                startFriendTimer(result.timeLimit);
+            } else {
+                alert(result.message);
+            }
+        }
+
+        function startFriendTimer(seconds) {
+            let left = seconds; const timerEl = document.getElementById('friendTimer');
+            if (friendTimerInterval) clearInterval(friendTimerInterval);
+            const update = () => { const mins = Math.floor(left/60); const secs = left%60; timerEl.textContent = `${mins}:${secs.toString().padStart(2,'0')}`; if (left<=10) timerEl.classList.add('warning'); else timerEl.classList.remove('warning'); };
+            update();
+            friendTimerInterval = setInterval(()=>{ left--; update(); if (left<=0){ clearInterval(friendTimerInterval); endCallFriendAuto(); } },1000);
+        }
+
+        function endCallFriendAuto(){ document.getElementById('friendModal').classList.remove('active'); alert('انتهى الوقت! انتهت دقيقة ونصف مع صديقك.'); }
+        function endCallFriend(){ if (friendTimerInterval) clearInterval(friendTimerInterval); document.getElementById('friendModal').classList.remove('active'); }
+
+        function clearAttributionTimeout(){ if (attributionTimeoutId){ clearTimeout(attributionTimeoutId); attributionTimeoutId = null; } }
+
+        function showAttributionOptions(){ const at = Engine.showAnswerAttributionOptions(); document.getElementById('team1AttrBtn').textContent = `${Engine.gameState.team1.name} (${Engine.gameState.team1.score})`; document.getElementById('team2AttrBtn').textContent = `${Engine.gameState.team2.name} (${Engine.gameState.team2.score})`; document.getElementById('attributionPanel').classList.add('active'); clearAttributionTimeout(); attributionTimeoutId = setTimeout(()=>{ if (document.getElementById('attributionPanel').classList.contains('active')) handleTeamAttribution(null); }, ATTRIBUTION_FALLBACK_MS); }
+
+        function handleTeamAttribution(teamNumber){ clearAttributionTimeout(); stopGameTimer(); Engine.submitAnswerAttribution(teamNumber); updateScoreDisplay(); renderCategoriesGrid(); document.getElementById('questionPanel').classList.remove('active'); document.getElementById('attributionPanel').classList.remove('active'); if (Engine.isGameOver()){ showGameOver(); } }
+
+        function updateScoreDisplay(){ const scores = Engine.getScores(); document.getElementById('team1NameDisplay').textContent = scores.team1.name; document.getElementById('team2NameDisplay').textContent = scores.team2.name; document.getElementById('team1Score').textContent = scores.team1.score; document.getElementById('team2Score').textContent = scores.team2.score; document.getElementById('team1ScoreDisplay').classList.toggle('active', Engine.gameState.currentTeamTurn === 1); document.getElementById('team2ScoreDisplay').classList.toggle('active', Engine.gameState.currentTeamTurn === 2); const currentTeamName = Engine.gameState.currentTeamTurn === 1 ? scores.team1.name : scores.team2.name; document.getElementById('currentTurnText').textContent = `دور: ${currentTeamName}`; document.getElementById('currentTurnBadge').textContent = `${currentTeamName} يختار الآن...`; }
+
+        function showGameOver(){ document.getElementById('gameArea').style.display = 'none'; document.getElementById('gameHeader').style.display = 'none'; const results = Engine.getGameResults(); const winnerText = results.winner === 'تعادل' ? '🤝 تعادل' : `🏆 فاز: ${results.winner}`; document.getElementById('winnerBadge').textContent = winnerText; const scoresHTML = `<div class="final-score-card"><h4>${results.team1.name}</h4><div class="score">${results.team1.score}</div></div><div class="final-score-card"><h4>${results.team2.name}</h4><div class="score">${results.team2.score}</div></div>`; document.getElementById('finalScores').innerHTML = scoresHTML; document.getElementById('gameOverPanel').classList.add('active'); }
+
+        function resetGame(){ selectedCategoryIds = []; document.getElementById('gameOverPanel').classList.remove('active'); document.getElementById('setupModal').classList.add('active'); document.getElementById('setupForm').reset(); initSetupForm(); }
+        function goHome(){ window.location.href = 'index.html'; }
+
+        function startGameTimer(){ timeLeft = 60; const timerEl = document.getElementById('timer'); if (timerInterval) clearInterval(timerInterval); timerInterval = setInterval(()=>{ timeLeft--; timerEl.textContent = timeLeft; if (timeLeft <= 10){ timerEl.classList.add('danger'); timerEl.classList.remove('warning'); } else if (timeLeft <= 20){ timerEl.classList.add('warning'); timerEl.classList.remove('danger'); } else { timerEl.classList.remove('warning','danger'); } if (timeLeft === 0){ stopGameTimer(); showAttributionOptions(); } },1000); }
+        function stopGameTimer(){ if (timerInterval){ clearInterval(timerInterval); timerInterval = null; } }
+
+        document.addEventListener('DOMContentLoaded', () => { initSetupForm(); });
+    </script>
+</body>
+</html>
