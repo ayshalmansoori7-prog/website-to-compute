@@ -39,6 +39,11 @@
             min-height: 100vh;
             padding: 20px;
             direction: rtl;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-app-region: no-drag;
         }
 
         .container {
@@ -539,6 +544,42 @@
         // Game requires internet - check connectivity
         let isOnline = navigator.onLine;
         
+        // Prevent all save/download functionality
+        document.addEventListener('keydown', (e) => {
+            // Block Ctrl+S, Cmd+S (Save)
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+            // Block Ctrl+Shift+S (Save As)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+            // Block F12 (Developer Tools)
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Clear all storage on load
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Prevent caching
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => caches.delete(name));
+            });
+        }
+        
         window.addEventListener('online', () => {
             isOnline = true;
             console.log('Internet connection restored');
@@ -754,6 +795,9 @@
             showPage('setupPage');
             document.getElementById('team1Name').value = '';
             document.getElementById('team2Name').value = '';
+            // Clear all data
+            gameState.answeredQuestions = new Set();
+            gameState.selectedCategories = [];
         }
 
         // Initialize
