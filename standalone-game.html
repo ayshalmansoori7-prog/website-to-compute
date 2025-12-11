@@ -536,6 +536,28 @@
     </div>
 
     <script>
+        // Game requires internet - check connectivity
+        let isOnline = navigator.onLine;
+        
+        window.addEventListener('online', () => {
+            isOnline = true;
+            console.log('Internet connection restored');
+            document.body.style.opacity = '1';
+        });
+        
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            console.log('Internet connection lost');
+            alert('⚠️ إنقطع الإنترنت! اللعبة تحتاج إلى إتصال بالإنترنت للعب');
+            document.body.style.opacity = '0.5';
+        });
+
+        // Check initial connection
+        if (!isOnline) {
+            alert('❌ هذه اللعبة تحتاج إلى إتصال بالإنترنت للعب.\nتأكد من أن لديك اتصال بالإنترنت وحاول مرة أخرى.');
+            document.body.style.opacity = '0.5';
+        }
+
         const gameState = {
             team1: { name: '', score: 0 },
             team2: { name: '', score: 0 },
@@ -572,11 +594,23 @@
         }
 
         function startGame() {
+            // Check internet connection before starting game
+            if (!isOnline) {
+                alert('❌ لا يمكن بدء اللعبة!\nتأكد من أن لديك اتصال بالإنترنت.');
+                return;
+            }
             showPage('setupPage');
         }
 
         function handleSetup(e) {
             e.preventDefault();
+            
+            // Verify internet connection
+            if (!isOnline) {
+                alert('❌ لا يمكن بدء اللعبة بدون إنترنت!');
+                return;
+            }
+            
             gameState.team1.name = document.getElementById('team1Name').value;
             gameState.team2.name = document.getElementById('team2Name').value;
             gameState.team1.score = 0;
